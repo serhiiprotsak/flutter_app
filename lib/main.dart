@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
-import 'providers/connectivity_provider.dart';  // Імпортуємо провайдер
-import 'app_colors.dart'; 
+import 'app_colors.dart'; // Import your custom colors
 
 
 void main() {
@@ -14,27 +12,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ConnectivityProvider(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Tour agency',
-        theme: ThemeData(
-          primaryColor: const Color.fromARGB(255, 201, 123, 22),
-          colorScheme: const ColorScheme.light(
-            primary: Color.fromARGB(255, 238, 163, 0),
-            secondary: AppColors.secondaryColor,
-          ),
-          scaffoldBackgroundColor: AppColors.backgroundColor,
-          textTheme: const TextTheme(
-            bodyLarge: TextStyle(color: AppColors.textColor),
-            bodyMedium: TextStyle(color: AppColors.textColor),
-            displayLarge: TextStyle(color: AppColors.textColor),
-            displayMedium: TextStyle(color: AppColors.textColor),
-          ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Online Store',
+      theme: ThemeData(
+        primaryColor: AppColors.primaryColor,
+        colorScheme: ColorScheme.light(
+          primary: AppColors.primaryColor,
+          secondary: AppColors.secondaryColor,
         ),
-        home: LoginScreen(),
+        scaffoldBackgroundColor: AppColors.backgroundColor,
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: AppColors.textColor),
+          bodyMedium: TextStyle(color: AppColors.textColor),
+          displayLarge: TextStyle(color: AppColors.textColor),
+          displayMedium: TextStyle(color: AppColors.textColor),
+        ),
       ),
+      home: LoginScreen(),
     );
   }
 }

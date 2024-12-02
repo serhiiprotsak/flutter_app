@@ -5,8 +5,9 @@
 import FlutterMacOS
 import Foundation
 
+import connectivity_plus
 
-import connectivity_plus_macos
+
 
 import shared_preferences_foundation
 

@@ -14,10 +14,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  connectivity_plus: ^2.3.0  # Знижуємо до версії, яка сумісна з Flutter 3.5.3
+  http: ^1.2.2
+  connectivity_plus: ^4.0.0
   shared_preferences: ^2.0.17
   cupertino_icons: ^1.0.8
-  provider: ^6.1.2
+image_picker: ^0.8.6
 
 
 dev_dependencies:

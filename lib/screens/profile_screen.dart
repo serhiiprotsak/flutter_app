@@ -4,8 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app_colors.dart'; 
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
-
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -14,6 +12,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _emailController = TextEditingController();
   final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
+  String _avatarUrl = '';  // Для збереження шляху до аватарки
 
   @override
   void initState() {
@@ -21,34 +20,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadUserData();
   }
 
-  // Завантажуємо дані користувача з SharedPreferences
+  // Завантаження даних з SharedPreferences
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _emailController.text = prefs.getString('email') ?? '';
-      _nameController.text = prefs.getString('name') ?? '';
-      _passwordController.text = prefs.getString('password') ?? '';
-    });
+    _emailController.text = prefs.getString('email') ?? '';
+    _nameController.text = prefs.getString('name') ?? '';
+    _passwordController.text = prefs.getString('password') ?? '';
+    _avatarUrl = prefs.getString('avatarUrl') ?? ''; // Завантаження аватарки
+
+    setState(() {});
   }
 
-  // Зберігаємо дані користувача в SharedPreferences
+  // Збереження даних користувача в SharedPreferences
   Future<void> _saveUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    
-    // Перевіряємо, чи всі поля заповнені
-    if (_nameController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All fields must be filled out')),
-      );
-      return;
-    }
-    
     await prefs.setString('email', _emailController.text);
     await prefs.setString('name', _nameController.text);
     await prefs.setString('password', _passwordController.text);
+    await prefs.setString('avatarUrl', _avatarUrl); // Збереження аватарки
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated successfully')),
+      SnackBar(content: Text('Profile updated successfully')),
+    );
+  }
+
+  // Вибір аватарки за замовчуванням
+  Widget _buildAvatar() {
+    return CircleAvatar(
+      radius: 50,  // Розмір аватарки
+      backgroundImage: _avatarUrl.isNotEmpty
+          ? NetworkImage(_avatarUrl) // Якщо є URL аватарки, то показуємо зображення
+          : null,
+      child: _avatarUrl.isEmpty
+          ? Icon(Icons.person, size: 50, color: AppColors.whiteColor) // Якщо аватарки немає, показуємо іконку
+          : null,
     );
   }
 
@@ -58,7 +63,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
 
         title: const Text('Profile', style: TextStyle(color: AppColors.whiteColor)),
-        backgroundColor: const Color.fromARGB(255, 216, 139, 24), 
+
+        backgroundColor: const Color.fromARGB(255, 40, 54, 53), 
 
       ),
       body: Padding(
@@ -66,30 +72,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
 
           children: [
-            // Поле для імені
+            // Відображення аватарки
+            _buildAvatar(),
+            SizedBox(height: 20),
+            // Форма для зміни даних користувача
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(labelText: 'Name'),
             ),
-            // Поле для електронної пошти
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: 'Email'),
             ),
-            // Поле для пароля
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
+              decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            const SizedBox(height: 20),
-            // Кнопка для збереження змін
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _saveUserData,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-              ),
               child: Text('Save Changes', style: TextStyle(color: AppColors.whiteColor)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 42, 66, 63),
+              ),
             ),
           ],
         ),

@@ -7,7 +7,7 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator; // Додаємо параметр для валідації
   final TextEditingController controller;
 
-  const CustomTextField({super.key, 
+  CustomTextField({
     required this.labelText,
     this.obscureText = false,
     required this.controller,
@@ -24,7 +24,7 @@ class CustomTextField extends StatelessWidget {
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-          border: const OutlineInputBorder(),
+          border: OutlineInputBorder(),
           labelText: labelText,
         ),
         validator: validator, // Підключаємо валідацію
