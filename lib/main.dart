@@ -4,6 +4,7 @@ import 'screens/login_screen.dart';
 import 'providers/connectivity_provider.dart';  // Імпортуємо провайдер
 import 'app_colors.dart'; 
 
+
 void main() {
   runApp(MyApp());
 }
