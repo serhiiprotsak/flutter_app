@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
   final String labelText;
   final bool obscureText;
+
   final String? Function(String?)? validator; // Додаємо параметр для валідації
   final TextEditingController controller;
 
@@ -13,10 +14,12 @@ class CustomTextField extends StatelessWidget {
     this.validator,
   });
 
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
+
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
@@ -25,6 +28,7 @@ class CustomTextField extends StatelessWidget {
           labelText: labelText,
         ),
         validator: validator, // Підключаємо валідацію
+
       ),
     );
   }

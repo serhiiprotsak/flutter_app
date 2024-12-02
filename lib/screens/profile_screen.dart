@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import '../app_colors.dart'; 
 
@@ -60,12 +61,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         title: const Text('Profile', style: TextStyle(color: AppColors.whiteColor)),
+
         backgroundColor: const Color.fromARGB(255, 40, 54, 53), 
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+
           children: [
             // Відображення аватарки
             _buildAvatar(),
@@ -96,6 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       backgroundColor: AppColors.backgroundColor,
+
     );
   }
 }

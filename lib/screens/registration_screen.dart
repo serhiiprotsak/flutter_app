@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../app_colors.dart';
+
 import '../services/local_storage_service.dart';
 import '../app_colors.dart'; 
 
@@ -33,12 +38,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Register', style: TextStyle(color: AppColors.whiteColor)), 
         backgroundColor: const Color.fromARGB(255, 57, 74, 228), 
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -95,7 +102,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ),
       ),
+
       backgroundColor: AppColors.backgroundColor, 
+
     );
   }
 }
