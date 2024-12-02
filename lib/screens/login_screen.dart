@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert'; // For JSON parsing
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../services/local_storage_service.dart';
 import '../app_colors.dart';
 import 'registration_screen.dart';
 import 'categories_screen.dart';
-import '../providers/connectivity_provider.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -28,8 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _checkAutoLogin() async {
     final userData = await _localStorageService.getUserData();
-    
-    // Перевірка підключення
+
     if (userData != null && await _isConnected()) {
       _showNotificationDialog('Auto-login succeeded.');
       Navigator.pushReplacement(
@@ -47,19 +44,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showNotificationDialog(String message) {
-    // Перевірка на наявність діалогів, щоб не відображати кілька одночасно
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context);
-    }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Notification'),
+        title: Text('Notification'),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text('OK'),
           ),
         ],
       ),
@@ -74,11 +67,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final email = _emailController.text;
     final password = _passwordController.text;
-    final userData = await _localStorageService.getUserData();
 
-    if (userData != null &&
-        userData['email'] == email &&
-        userData['password'] == password) {
+    final response = await _authenticateUser(email, password);
+
+    if (response != null && response['status'] == 'success') {
       _showNotificationDialog('Login successful');
       Navigator.pushReplacement(
         context,
@@ -89,16 +81,55 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<Map<String, dynamic>?> _authenticateUser(String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://run.mocky.io/v3/c5da4b48-7efd-43f5-b185-14febf6bd841'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Check if the response contains the user data
+        for (var user in data['users']) {
+          if (user['email'] == email && user['password'] == password) {
+            return {
+              'status': 'success',
+              'user': user,
+            };
+          }
+        }
+        // If no user matched
+        return {
+          'status': 'failure',
+          'message': 'Invalid email or password',
+        };
+      } else {
+        return null; // Server error
+      }
+    } catch (e) {
+      print('Error during login: $e');
+      return null;
+    }
+  }
+
   void _logout() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to log out?'),
+        title: Text('Logout'),
+        content: Text('Are you sure you want to log out?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
@@ -108,13 +139,8 @@ class _LoginScreenState extends State<LoginScreen> {
               await prefs.remove('name');
 
               Navigator.of(context).pop();
-              // Додатково можете зробити повернення до екрану входу
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
-              );
             },
-            child: const Text('Logout'),
+            child: Text('Logout'),
           ),
         ],
       ),
@@ -123,28 +149,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final connectivityProvider = Provider.of<ConnectivityProvider>(context);
-
-    // Якщо відсутнє з'єднання, показуємо повідомлення
-    if (!connectivityProvider.isConnected) {
-      _showNotificationDialog('No internet connection. Please check your connection.');
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login', style: TextStyle(color: AppColors.whiteColor)),
-        backgroundColor: const Color.fromARGB(255, 233, 148, 20),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RegistrationScreen()),
-              );
-            },
-            child: const Text('Register', style: TextStyle(color: AppColors.whiteColor)),
-          ),
-        ],
+        title: Text('Login', style: TextStyle(color: AppColors.whiteColor)),
+        backgroundColor: const Color(0xFF134B4B),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -152,17 +160,27 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: 'Email'),
             ),
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
+              decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _login,
-              child: const Text('Login'),
+              child: Text('Login'),
+            ),
+            SizedBox(height: 20),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegistrationScreen()),
+                );
+              },
+              child: Text('Register', style: TextStyle(color: const Color.fromARGB(255, 46, 77, 75))),
             ),
           ],
         ),
